@@ -2,6 +2,7 @@ package main
 
 import (
 	log "github.com/sirupsen/logrus"
+	"mydocker/cgroups/subsystems"
 	"mydocker/container"
 	"fmt"
 	"github.com/urfave/cli"
@@ -16,6 +17,18 @@ var runCommand = cli.Command{
 			Name: "ti",
 			Usage: "enable tty",
 		},
+		cli.StringFlag{
+			Name: "m",
+			Usage: "memory limit",
+		},
+		cli.StringFlag{
+			Name: "cpushare",
+			Usage: "cpushare limit",
+		},
+		cli.StringFlag{
+			Name: "cpuset",
+			Usage: "cpuset limit",
+		},
 	},
 
 	Action: func(context *cli.Context) error{
@@ -27,7 +40,12 @@ var runCommand = cli.Command{
 			cmdArray = append(cmdArray, arg)
 		}
 		tty := context.Bool("ti")
-		Run(tty, cmdArray)
+		resConf := &subsystems.ResourceCofing{
+			MemoryLimit: context.String("m"),
+			CpuSet: context.String("cpuset"),
+			CpuShare: context.String("cpuset"),
+		}
+		Run(tty, cmdArray, resConf)
 		return nil
 	},
 }
