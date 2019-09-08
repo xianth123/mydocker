@@ -45,6 +45,7 @@ var runCommand = cli.Command{
 			CpuSet: context.String("cpuset"),
 			CpuShare: context.String("cpuset"),
 		}
+		log.Infof(" 666666666666 %v", resConf)
 		Run(tty, cmdArray, resConf)
 		return nil
 	},

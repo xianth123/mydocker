@@ -1,7 +1,7 @@
 package cgroups
 
 import (
-	"github.com/sirupsen/logrus"
+//	"github.com/sirupsen/logrus"
 	"mydocker/cgroups/subsystems"
 	)
 
@@ -36,7 +36,7 @@ func (c *CgroupManager) Set(res *subsystems.ResourceCofing) error {
 func (c *CgroupManager) Destroy() error {
 	for _, subSysIns := range(subsystems.SubsystemsIns) {
 		if err := subSysIns.Remove(c.Path); err != nil {
-			logrus.Warnf("remove cgroup fail %v", err)
+//			logrus.Warnf("remove cgroup fail %v", err)
 		}
 	}
 	return nil
