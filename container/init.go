@@ -92,6 +92,7 @@ func pivotRoot(root string) error {
 
 	pivotDir = filepath.Join("/", ".pivot_root")
 	// umount rootfs/.pivot_root
+	fmt.Println("6666666 info %s", pivotDir)
 	if err := syscall.Unmount(pivotDir, syscall.MNT_DETACH); err != nil {
 		return fmt.Errorf("umount pivot_root fail %v", err)
 	}
