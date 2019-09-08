@@ -73,7 +73,7 @@ func pivotRoot(root string) error {
 	// #define MS_BIND      4096
 	///* 把一个已挂载文件系统移动到另一个挂载点，相当于先执行卸载，然后将文件系统挂载在另外的一个目录下 */
 	// #define MS_REC       16384 /* 为目录子树递归的创建绑定挂载 */
-	if err := syscall.Mount(root, root, "bind", syscall.MS_BIND|syscall.MS_REC); err != nil {
+	if err := syscall.Mount(root, root, "bind", syscall.MS_BIND|syscall.MS_REC, ""); err != nil {
 		return fmt.Errorf("Mount rootfs to itself error: %v", err)
 	}
 	// 创建 rootfs/.pivot_root 存储 old_root
@@ -92,7 +92,7 @@ func pivotRoot(root string) error {
 
 	pivotDir = filepath.Join("/", ".pivot_root")
 	// umount rootfs/.pivot_root
-	if err := syscall.Umount(pivotDir, syscall.MNT_DETACH); err != nil {
+	if err := syscall.Unmount(pivotDir, syscall.MNT_DETACH); err != nil {
 		return fmt.Errorf("umount pivot_root fail %v", err)
 	}
 	return os.Remove(pivotDir)
