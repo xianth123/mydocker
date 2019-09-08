@@ -26,6 +26,7 @@ func NewParentProcess(tty bool) (*exec.Cmd, *os.File) {
 	}
 	cmd.ExtraFiles = []*os.File{readPipe}  // 子进程继承读 pipe 文件。
 	                                      // 标准输入，标准输出，错误不能读取，所以，readPipe 的文件描述符是3
+	cmd.Dir = "/root/busybox"             // 设置 cmd 的dir
 	return cmd, writePipe				// 返回一个 写 pipe 文件进行命令的输入
 }
 
