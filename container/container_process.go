@@ -1,7 +1,7 @@
 package container
 
 import (
-	log "github.com/sirupsen/logrus"
+//	log "github.com/sirupsen/logrus"
 	"os"
 	"os/exec"
 	"syscall"
@@ -11,7 +11,7 @@ import (
 func NewParentProcess(tty bool) (*exec.Cmd, *os.File) {
 	readPipe, writePipe, err := NewPipe()
 	if err != nil {
-		log.Errorf("New pipe error %v", err)
+//		log.Errorf("New pipe error %v", err)
 		return nil, nil
 	}
 	cmd := exec.Command("/proc/self/exe", "init") //返回一个命令

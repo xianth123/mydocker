@@ -9,7 +9,7 @@ import (
 	"strings"
 	"syscall"
 	"io/ioutil"
-	log "github.com/sirupsen/logrus"
+//	log "github.com/sirupsen/logrus"
 )
 
 // 设置 mount 参数， 进行 mount 文件的挂载。
@@ -28,11 +28,11 @@ func RunContainerInitProcess() error {
 	// 寻找命令的路径
 	path, err := exec.LookPath(cmdArray[0])
 	if err != nil {
-		log.Errorf("exec loop path error %v", err)
+	//	log.Errorf("exec loop path error %v", err)
 	}
-	log.Info("Find path %s", path)
+//	log.Info("Find path %s", path)
 	if err := syscall.Exec(path, cmdArray[0:], os.Environ()); err != nil {
-		log.Errorf(err.Error())
+	//	log.Errorf(err.Error())
 	}
 	return nil
 }
@@ -43,7 +43,7 @@ func readUserCommand() []string  {
 	pipe := os.NewFile(uintptr(3), "pipe")
 	msg, err := ioutil.ReadAll(pipe)
 	if err != nil {
-		log.Errorf("init read pipe error %v", err)
+	//	log.Errorf("init read pipe error %v", err)
 		return nil
 	}
 	msgStr := string(msg)
