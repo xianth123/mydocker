@@ -46,7 +46,7 @@ func NewPipe() (*os.File, *os.File, error)  {
 
 // 创建 AUFS 联合文件系统
 func NewWorkSpace(rootURL string, mntURL string)  {
-	CreateReadOnlyLayer(rootURL)
+//	CreateReadOnlyLayer(rootURL)
 	CreateWriteLayer(rootURL)
 	CreateMountPoint(rootURL, mntURL)
 }
