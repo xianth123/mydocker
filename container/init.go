@@ -98,5 +98,4 @@ func pivotRoot(root string) error {
 	}
 	return os.Remove(pivotDir)
 
-
 }
