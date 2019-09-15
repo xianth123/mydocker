@@ -14,8 +14,8 @@ import (
 
 // init 做一些初始化工作
 // 给执行的命令 包装 namespace
-func Run(tty bool, comArray []string, res *subsystems.ResourceCofing)  {
-	parent, writePipe := container.NewParentProcess(tty)
+func Run(tty bool, comArray []string, res *subsystems.ResourceCofing, volume string)  {
+	parent, writePipe := container.NewParentProcess(tty, volume)
 	if parent == nil {
 		log.Errorf("New parent process error")
 		return
@@ -31,6 +31,9 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceCofing)  {
 
 	sendInitCommand(comArray, writePipe)
 	parent.Wait()
+	mntURL := "/root/mnt"
+	rootURL := "/root"
+	container.DeleteWordSpace(rootURL, mntURL, volume)
 	os.Exit(-1)
 }
 

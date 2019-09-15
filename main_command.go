@@ -29,6 +29,10 @@ var runCommand = cli.Command{
 			Name: "cpuset",
 			Usage: "cpuset limit",
 		},
+		cli.StringFlag{
+			Name: "v",
+			Usage: "volume",
+		},
 	},
 
 	Action: func(context *cli.Context) error{
@@ -46,7 +50,8 @@ var runCommand = cli.Command{
 			CpuShare: context.String("cpuset"),
 		}
 		log.Infof(" 666666666666 %v", resConf)
-		Run(tty, cmdArray, resConf)
+		volume := context.String("v")
+		Run(tty, cmdArray, resConf, volume)
 		return nil
 	},
 }

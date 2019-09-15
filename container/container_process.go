@@ -2,6 +2,7 @@ package container
 
 import (
 	"fmt"
+	"strings"
 
 	//	log "github.com/sirupsen/logrus"
 	"os"
@@ -10,7 +11,7 @@ import (
 )
 
 // 返回一个包装了 namespace 的命令描述，和往这个命令写入参数的 write pipe 文件。
-func NewParentProcess(tty bool) (*exec.Cmd, *os.File) {
+func NewParentProcess(tty bool, volume string) (*exec.Cmd, *os.File) {
 	readPipe, writePipe, err := NewPipe()
 	if err != nil {
 //		log.Errorf("New pipe error %v", err)
@@ -31,7 +32,7 @@ func NewParentProcess(tty bool) (*exec.Cmd, *os.File) {
 	cmd.Dir = "/root/busybox"             // 设置 cmd 的dir
 	mntURL := "/root/mnt/"
 	rootURL := "/root/"
-	NewWorkSpace(rootURL, mntURL)
+	NewWorkSpace(rootURL, mntURL, volume)
 	cmd.Dir = mntURL
 	return cmd, writePipe				// 返回一个 写 pipe 文件进行命令的输入
 }
@@ -45,10 +46,48 @@ func NewPipe() (*os.File, *os.File, error)  {
 }
 
 // 创建 AUFS 联合文件系统
-func NewWorkSpace(rootURL string, mntURL string)  {
+func NewWorkSpace(rootURL string, mntURL string, volume string)  {
 //	CreateReadOnlyLayer(rootURL)
 	CreateWriteLayer(rootURL)
 	CreateMountPoint(rootURL, mntURL)
+	if volume != ""{
+		volumeURLs := volumeUrlExtract(volume)
+		length := len(volumeURLs)
+		if length == 2 && volumeURLs[0] != "" && volumeURLs[1] != "" {
+			// 根据输入的 volume 宿主机url docker url 分别进行挂载
+			MountVolume(rootURL, mntURL, volumeURLs)
+			println("%q", volumeURLs)
+		}else {
+			println("volume error")
+		}
+	}
+}
+
+func volumeUrlExtract(volume string) ([]string){
+	var volumeURLs [] string
+	volumeURLs = strings.Split(volume, ":")
+	return volumeURLs
+
+}
+
+func MountVolume(rootURL string, mntURL string, volumeURLs []string) {
+	// 创建宿主机文件目录
+	parentUrl := volumeURLs[0]
+	if err := os.Mkdir(parentUrl, 0777); err != nil {
+		println(" mkdir parent dir error, %s    %v", parentUrl, err)
+	}
+	containerUrl := volumeURLs[1]
+	containerVolumeURL := mntURL + containerUrl
+	if err := os.Mkdir(containerVolumeURL, 0777); err != nil {
+		println(" mkdir container dir error, %s    %v", parentUrl, err)
+	}
+	dirs := "dirs=" + parentUrl
+	cmd := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", containerVolumeURL)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		println("mount volume error , %v", err)
+	}
 }
 
 // 获取 busybox.tar 的路径，将其解压到，解压后的 busybox 就是只读层
@@ -93,9 +132,30 @@ func CreateMountPoint(rootURL string, mntURL string){
 	}
 }
 
-func DeleteWordSpace(rootURL string, mntURL string) {
-	DeleteMountPoint(rootURL, mntURL)
+func DeleteWordSpace(rootURL string, mntURL string, volume string) {
+	if (volume != ""){
+		volumeUrls := volumeUrlExtract(volume)
+		length := len(volumeUrls)
+		if length == 2 && volumeUrls[0] != "" && volumeUrls[1] != "" {
+			DeleteMountPointWithVolume(rootURL, mntURL, volumeUrls)
+		} else {
+			DeleteMountPoint(rootURL, mntURL)
+		}
+	} else {
+		DeleteMountPoint(rootURL, mntURL)
+	}
 	DeleteWriteLayer(rootURL)
+}
+
+func DeleteMountPointWithVolume(rootURL string, mntURL string, volumeUrls []string)  {
+	containerUrl := mntURL + volumeUrls[1]
+	cmd := exec.Command("umount", containerUrl)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		println("umont volume failed %v", err)
+	}
+	DeleteMountPoint(rootURL, mntURL)
 }
 
 func DeleteMountPoint(rootURL string, mntURL string)  {
