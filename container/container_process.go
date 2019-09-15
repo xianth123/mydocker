@@ -73,8 +73,11 @@ func volumeUrlExtract(volume string) ([]string){
 func MountVolume(rootURL string, mntURL string, volumeURLs []string) {
 	// 创建宿主机文件目录
 	parentUrl := volumeURLs[0]
-	if err := os.Mkdir(parentUrl, 0777); err != nil {
-		println(" mkdir parent dir error, %s    %v", parentUrl, err)
+	exist, _ := PathExists(parentUrl)
+	if exist == false{
+		if err := os.Mkdir(parentUrl, 0777); err != nil {
+			println(" mkdir parent dir error, %s    %v", parentUrl, err)
+		}
 	}
 	containerUrl := volumeURLs[1]
 	containerVolumeURL := mntURL + containerUrl
@@ -82,6 +85,8 @@ func MountVolume(rootURL string, mntURL string, volumeURLs []string) {
 		println(" mkdir container dir error, %s    %v", parentUrl, err)
 	}
 	dirs := "dirs=" + parentUrl
+	println("mount dir %s", dirs)
+	println("mount cmd mount -t aufs -o %s none %s", dirs, containerVolumeURL)
 	cmd := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", containerVolumeURL)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -124,6 +129,8 @@ func CreateMountPoint(rootURL string, mntURL string){
 		fmt.Println("mkdir  error, %v", err)
 	}
 	dirs := "dirs=" + rootURL + "writeLayer:" + rootURL + "busybox"
+	println("mount dir %s", dirs)
+	println("mount cmd mount -t aufs -o %s none %s", dirs, mntURL)
 	cmd := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mntURL)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
