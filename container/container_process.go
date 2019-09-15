@@ -91,7 +91,7 @@ func MountVolume(rootURL string, mntURL string, volumeURLs []string) {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		fmt.Pfintf("mount volume error , %v", err)
+		fmt.Printf("mount volume error , %v", err)
 	}
 }
 
@@ -129,8 +129,8 @@ func CreateMountPoint(rootURL string, mntURL string){
 		fmt.Printf("mkdir  error, %v /n", err)
 	}
 	dirs := "dirs=" + rootURL + "writeLayer:" + rootURL + "busybox"
-	fmt.Pfintf("mount dir %s", dirs)
-	fmt.Pfintf("mount cmd mount -t aufs -o %s none %s", dirs, mntURL)
+	fmt.Printf("mount dir %s", dirs)
+	fmt.Printf("mount cmd mount -t aufs -o %s none %s", dirs, mntURL)
 	cmd := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mntURL)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -160,7 +160,7 @@ func DeleteMountPointWithVolume(rootURL string, mntURL string, volumeUrls []stri
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		fmt.Pfintf("umont volume failed %v", err)
+		fmt.Printf("umont volume failed %v", err)
 	}
 	DeleteMountPoint(rootURL, mntURL)
 }
