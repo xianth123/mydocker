@@ -56,9 +56,9 @@ func NewWorkSpace(rootURL string, mntURL string, volume string)  {
 		if length == 2 && volumeURLs[0] != "" && volumeURLs[1] != "" {
 			// 根据输入的 volume 宿主机url docker url 分别进行挂载
 			MountVolume(rootURL, mntURL, volumeURLs)
-			fmt.Printf("%q /n", volumeURLs)
+			fmt.Printf("%q \n", volumeURLs)
 		}else {
-			fmt.Printf("volume error /n")
+			fmt.Printf("volume error \n")
 		}
 	}
 }
@@ -76,22 +76,22 @@ func MountVolume(rootURL string, mntURL string, volumeURLs []string) {
 	exist, _ := PathExists(parentUrl)
 	if exist == false{
 		if err := os.Mkdir(parentUrl, 0777); err != nil {
-			fmt.Printf(" mkdir parent dir error, %s    %v /n", parentUrl, err)
+			fmt.Printf(" mkdir parent dir error, %s    %v \n", parentUrl, err)
 		}
 	}
 	containerUrl := volumeURLs[1]
 	containerVolumeURL := mntURL + containerUrl
 	if err := os.Mkdir(containerVolumeURL, 0777); err != nil {
-		fmt.Printf(" mkdir container dir error, %s    %v", parentUrl, err)
+		fmt.Printf(" mkdir container dir error, %s    %v \n", parentUrl, err)
 	}
 	dirs := "dirs=" + parentUrl
-	fmt.Printf("mount dir %s /n", dirs)
-	fmt.Printf("mount cmd mount -t aufs -o %s none %s /n", dirs, containerVolumeURL)
+	fmt.Printf("mount dir %s \n", dirs)
+	fmt.Printf("mount cmd mount -t aufs -o %s none %s \n", dirs, containerVolumeURL)
 	cmd := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", containerVolumeURL)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		fmt.Printf("mount volume error , %v", err)
+		fmt.Printf("mount volume error , %v \n", err)
 	}
 }
 
@@ -101,14 +101,14 @@ func CreateReadOnlyLayer(rootURL string)  {
 	busyboxTarURL := rootURL + "busybox.tar"
 	exist, err := PathExists(busyboxTarURL)
 	if err != nil {
-		fmt.Printf("Fail to judeg whether dir %s exitst, %v", busyboxTarURL, err)
+		fmt.Printf("Fail to judeg whether dir %s exitst, %v \n", busyboxTarURL, err)
 	}
 	if exist == false {
 		if err := os.Mkdir(busyboxURL, 0777); err != nil {
-			fmt.Printf("mkdir %s error, %v", busyboxURL, err)
+			fmt.Printf("mkdir %s error, %v \n", busyboxURL, err)
 		}
 		if _, err := exec.Command("tar", "-xvf", busyboxTarURL, "-C", busyboxURL).CombinedOutput(); err != nil {
-			fmt.Printf("untar %s error, %v", busyboxURL, err)
+			fmt.Printf("untar %s error, %v \n", busyboxURL, err)
 		}
 	}
 
@@ -118,7 +118,7 @@ func CreateReadOnlyLayer(rootURL string)  {
 func CreateWriteLayer(rootURL string) {
 	writeURL := rootURL + "writeLayer/"
 	if err := os.Mkdir(writeURL, 0777); err != nil {
-		fmt.Printf("create write layer error, %v", err)
+		fmt.Printf("create write layer error, %v \n", err)
 
 	}
 }
@@ -126,16 +126,16 @@ func CreateWriteLayer(rootURL string) {
 //创建一个挂载点
 func CreateMountPoint(rootURL string, mntURL string){
 	if err := os.Mkdir(mntURL, 0777); err != nil {
-		fmt.Printf("mkdir  error, %v /n", err)
+		fmt.Printf("mkdir  error, %v \n", err)
 	}
 	dirs := "dirs=" + rootURL + "writeLayer:" + rootURL + "busybox"
-	fmt.Printf("mount dir %s", dirs)
-	fmt.Printf("mount cmd mount -t aufs -o %s none %s", dirs, mntURL)
+	fmt.Printf("mount dir %s \n", dirs)
+	fmt.Printf("mount cmd mount -t aufs -o %s none %s \n", dirs, mntURL)
 	cmd := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mntURL)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		fmt.Printf("cmd run error, %v", err)
+		fmt.Printf("cmd run error, %v \n", err)
 	}
 }
 
@@ -160,7 +160,7 @@ func DeleteMountPointWithVolume(rootURL string, mntURL string, volumeUrls []stri
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		fmt.Printf("umont volume failed %v", err)
+		fmt.Printf("umont volume failed %v \n", err)
 	}
 	DeleteMountPoint(rootURL, mntURL)
 }
@@ -170,10 +170,10 @@ func DeleteMountPoint(rootURL string, mntURL string)  {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		fmt.Printf("cmd run error, %v", err)
+		fmt.Printf("cmd run error, %v \n", err)
 	}
 	if err := os.RemoveAll(mntURL); err != nil {
-		fmt.Printf("remove error, %v", err)
+		fmt.Printf("remove error, %v \n", err)
 	}
 }
 
