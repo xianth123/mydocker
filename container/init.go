@@ -62,8 +62,9 @@ func setUpMount()  {
 
 	// mount proc
 	defaultMountFlags := syscall.MS_NOEXEC | syscall.MS_NOSUID | syscall.MS_NODEV
-	syscall.Mount("proc", "/proc", "proc", uintptr(defaultMountFlags), "")
-	syscall.Mount("tmpfs", "/dev", "tmpfs", syscall.MS_NOSUID|syscall.MS_STRICTATIME, "mode=755")
+	syscall.Mount("proc", "/proc", "/proc", uintptr(defaultMountFlags), "")
+	fmt.Printf("mount cmd mount -t proc /proc /proc %d \n", uintptr(defaultMountFlags))
+	//syscall.Mount("tmpfs", "/dev", "tmpfs", syscall.MS_NOSUID|syscall.MS_STRICTATIME, "mode=755")
 }
 
 
@@ -73,6 +74,7 @@ func pivotRoot(root string) error {
 	// #define MS_BIND      4096
 	///* 把一个已挂载文件系统移动到另一个挂载点，相当于先执行卸载，然后将文件系统挂载在另外的一个目录下 */
 	// #define MS_REC       16384 /* 为目录子树递归的创建绑定挂载 */
+	fmt.Printf("mount cmd mount --bind %s %s %d ", root, root, syscall.MS_BIND|syscall.MS_REC)
 	if err := syscall.Mount(root, root, "bind", syscall.MS_BIND|syscall.MS_REC, ""); err != nil {
 		return fmt.Errorf("Mount rootfs to itself error: %v", err)
 	}
