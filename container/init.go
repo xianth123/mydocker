@@ -54,10 +54,10 @@ func readUserCommand() []string  {
 func setUpMount()  {
 	pwd ,err := os.Getwd()
 	if err != nil {
-		fmt.Println("Get current location error %v", err)
+		fmt.Printf("Get current location error %v", err)
 		return
 	}
-	fmt.Println("current location is %s", pwd)
+	fmt.Printf("current location is %s", pwd)
 	pivotRoot(pwd)
 
 	// mount proc
@@ -92,7 +92,7 @@ func pivotRoot(root string) error {
 
 	pivotDir = filepath.Join("/", ".pivot_root")
 	// umount rootfs/.pivot_root
-	fmt.Println("6666666 info %s", pivotDir)
+	fmt.Printf("6666666 info %s", pivotDir)
 	if err := syscall.Unmount(pivotDir, syscall.MNT_DETACH); err != nil {
 		return fmt.Errorf("umount pivot_root fail %v", err)
 	}
